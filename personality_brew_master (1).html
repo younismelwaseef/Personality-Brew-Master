@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Personality Brew Master</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QR Code Generator JS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- HTML5 QR Code Camera Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        witcher: '#2d1b4e',
+                        cauldron: '#1a102f',
+                        potion: '#a855f7',
+                        accent: '#ff007f',
+                        gold: '#fbbf24',
+                    },
+                    fontFamily: {
+                        fredoka: ['"Fredoka One"', 'cursive'],
+                        sans: ['Quicksand', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #0f0a1c;
+            color: #ffffff;
+            touch-action: manipulation;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .title-font {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        /* Mobile Viewport Simulation Container */
+        .mobile-container {
+            width: 100%;
+            max-width: 440px;
+            height: 100vh;
+            max-height: 900px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #180e29 0%, #0d0618 100%);
+        }
+
+        @media (min-width: 640px) {
+            .mobile-container {
+                height: 92vh;
+                border-radius: 36px;
+                border: 4px solid #3b2164;
+                margin-top: 4vh;
+            }
+        }
+
+        /* Animations for Cauldron Liquid & Steam */
+        @keyframes bubble {
+            0% { transform: translateY(0) scale(0.6); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes steam {
+            0% { transform: translateY(0) scaleX(0.8); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-80px) scaleX(1.4); opacity: 0; }
+        }
+
+        @keyframes flame {
+            0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
+            50% { transform: scaleY(1.2) scaleX(0.9); opacity: 1; }
+        }
+
+        @keyframes stir {
+            0% { transform: rotate(0deg) translateX(0px); }
+            25% { transform: rotate(15deg) translateX(12px); }
+            50% { transform: rotate(0deg) translateX(0px); }
+            75% { transform: rotate(-15deg) translateX(-12px); }
+            100% { transform: rotate(0deg) translateX(0px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.6)); }
+            50% { filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.9)); }
+        }
+
+        .animate-bubble {
+            animation: bubble 2.5s infinite ease-in;
+        }
+
+        .animate-steam {
+            animation: steam 3.5s infinite ease-out;
+        }
+
+        .animate-flame {
+            animation: flame 0.8s infinite ease-in-out alternate;
+        }
+
+        .stirring-active {
+            animation: stir 0.6s infinite ease-in-out;
+        }
+
+        .cauldron-glow {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.4);
+            border-radius: 10px;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(30, 20, 50, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(45, 27, 78, 0.85);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(251, 191, 36, 0.4);
+        }
+
+        /* Animated Title Pulse */
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 10px #f59e0b, 0 0 20px #ec4899; }
+            50% { text-shadow: 0 0 20px #a855f7, 0 0 35px #f59e0b; }
+        }
+
+        .glow-title {
+            animation: titleGlow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- Main Mobile Frame Container -->
+    <div class="mobile-container flex flex-col justify-between">
+        
+        <!-- Committee Demo Banner -->
+        <div class="bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 px-3 py-1 text-center text-[11px] font-bold tracking-wider text-slate-950 flex items-center justify-between">
+            <span><i class="fa-solid fa-award mr-1"></i> COMMITTEE DEMO MODE</span>
+            <span id="sessionStatus" class="bg-slate-950/80 text-amber-300 px-2 py-0.5 rounded-full text-[9px]">ROOM: #BREW-8842</span>
+        </div>
+
+        <!-- Header Bar -->
+        <header id="mainHeader" class="p-3 flex items-center justify-between z-20 border-b border-purple-900/40 bg-witcher/80 backdrop-blur">
+            <div class="flex items-center space-x-2 cursor-pointer" id="headerHomeBtn">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-flask text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="title-font text-lg text-yellow-400 tracking-wide leading-none">Brew Master</h1>
+                    <p class="text-[10px] text-purple-300 font-semibold tracking-wider">AI PERSONALITY POTION</p>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center space-x-2">
+                <button id="showJoinModalBtn" class="px-2.5 py-1 rounded-lg bg-pink-600/80 hover:bg-pink-500 text-white text-xs font-bold flex items-center space-x-1 shadow-md">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan / Join</span>
+                </button>
+                <button id="soundToggle" class="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-purple-300 hover:text-white transition">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-xs"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Main Display Area -->
+        <main class="flex-1 relative overflow-hidden flex flex-col justify-between p-3 z-10">
+
+            <!-- TAB 0: MAIN MENU SCREEN -->
+            <section id="tabMenu" class="flex-1 flex flex-col items-center justify-between py-4 text-center z-10 transition-all duration-300">
+                
+                <!-- Hero Animated Logo -->
+                <div class="flex flex-col items-center space-y-2 mt-2">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 p-1 shadow-2xl animate-bounce">
+                        <div class="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-amber-300 text-3xl">
+                            <i class="fa-solid fa-cauldron"></i>
+                        </div>
+                    </div>
+
+                    <h1 class="title-font text-2xl text-yellow-400 tracking-wider glow-title uppercase leading-tight px-2">
+                        PERSONALITY BREW MASTER
+                    </h1>
+
+                    <!-- Credits Card -->
+                    <div class="glass-panel px-4 py-2 rounded-2xl border border-purple-500/30 max-w-xs shadow-lg">
+                        <p class="text-[10px] uppercase font-bold tracking-widest text-pink-400 mb-1">Created By</p>
+                        <p class="text-xs text-purple-100 font-semibold leading-relaxed">
+                            Younis Mohamed • Selim Mohamed • Yehia Ahmed • Yassin Emad • Ali Mekky • Hamza Amr
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="w-full space-y-2.5 max-w-xs px-2 my-auto">
+                    <button id="btnPlayGame" class="w-full py-3 rounded-2xl title-font text-base text-white bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 shadow-xl hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-play text-yellow-300"></i>
+                        <span>START BREWING</span>
+                    </button>
+
+                    <button id="btnShowQr" class="w-full py-2.5 rounded-2xl font-bold text-xs text-purple-100 bg-purple-900/70 hover:bg-purple-800 border border-purple-500/40 shadow-md flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-qrcode text-pink-400"></i>
+                        <span>Scan / Share Game Link</span>
+                    </button>
+
+                    <button id="btnHowToPlay" class="w-full py-2.5 rounded-2xl font-bold text-xs text-purple-200 bg-slate-900/80 hover:bg-slate-800 border border-purple-500/30 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-circle-question text-yellow-400"></i>
+                        <span>How to Play</span>
+                    </button>
+
+                    <button id="btnDemoPreset" class="w-full py-2 rounded-2xl font-bold text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-award"></i>
+                        <span>Committee Instant Demo</span>
+                    </button>
+                </div>
+
+                <div class="text-[10px] text-purple-400">
+                    <p>Powered by Gemini AI Engine & Web Audio</p>
+                </div>
+
+            </section>
+
+            <!-- TAB 1: COOKING POT VIEW -->
+            <section id="tabBrew" class="flex-1 flex flex-col justify-between hidden transition-all duration-300">
+                        <div class="w-5 h-10 bg-gradient-to-t from-orange-600 to-yellow-300 rounded-t-full animate-flame" style="animation-delay: 0.3s;"></div>
+                        <div class="w-4 h-8 bg-gradient-to-t from-red-600 to-yellow-400 rounded-t-full animate-flame" style="animation-delay: 0.15s;"></div>
+                    </div>
+                </div>
+
+                <!-- Extended Sliders & Input Panel -->
+                <div class="glass-panel rounded-2xl p-3 flex-1 flex flex-col justify-between border border-purple-500/20 shadow-xl space-y-2 overflow-y-auto max-h-[300px]">
+                    
+                    <div class="flex justify-between items-center border-b border-purple-800/40 pb-1">
+                        <span class="title-font text-xs text-purple-200 uppercase tracking-wide">6-Dimension Personality Mix</span>
+                        <button id="resetIngredientsBtn" class="text-[11px] text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                        <!-- Heat / Energy -->
+                        <div>
+                            <div class="flex justify-between text-[11px] font-semibold">
+                                <span class="text-orange-400"><i class="fa-solid fa-fire"></i> Heat</span>
+                                <span id="valSpice" class="text-orange-300">50%</span>
+                            </div>
+                            <input type="range" id="inputSpice" min="0" max="100" value="50" class="w-full accent-orange-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Sweetness / Empathy -->
+                        <div>
+                            <div class="flex justify-between text-[11px] font-semibold">
+                                <span class="text-pink-400"><i class="fa-solid fa-heart"></i> Sweetness</span>
+                                <span id="valSweet" class="text-pink-300">50%</span>
+                            </div>
+                            <input type="range" id="inputSweet" min="0" max="100" value="50" class="w-full accent-pink-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Chaos / Extroversion -->
+                        <div>
+                            <div class="flex justify-between text-[11px] font-semibold">
+                                <span class="text-purple-400"><i class="fa-solid fa-bolt"></i> Chaos</span>
+                                <span id="valChaos" class="text-purple-300">50%</span>
+                            </div>
+                            <input type="range" id="inputChaos" min="0" max="100" value="50" class="w-full accent-purple-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Sparkle / Creativity -->
+                        <div>
+                            <div class="flex justify-between text-[11px] font-semibold">
+                                <span class="text-yellow-400"><i class="fa-solid fa-wand-magic-sparkles"></i> Sparkle</span>
+                                <span id="valSparkle" class="text-yellow-300">50%</span>
+                            </div>
+                            <input type="range" id="inputSparkle" min="0" max="100" value="50" class="w-full accent-yellow-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Dark Energy / Focus -->
+                        <div>
+                            <div class="flex justify-between text-[11px] font-semibold">
+                                <span class="text-indigo-400"><i class="fa-solid fa-moon"></i> Mystery</span>
+                                <span id="valMystery" class="text-indigo-300">30%</span>
+                            </div>
+                            <input type="range" id="inputMystery" min="0" max="100" value="30" class="w-full accent-indigo-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Harmony / Logic -->
+                        <div>
+                            <div class="flex justify-between text-[11px] font-semibold">
+                                <span class="text-teal-400"><i class="fa-solid fa-scale-balanced"></i> Harmony</span>
+                                <span id="valHarmony" class="text-teal-300">60%</span>
+                            </div>
+                            <input type="range" id="inputHarmony" min="0" max="100" value="60" class="w-full accent-teal-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Custom Secret Ingredient Input -->
+                    <div>
+                        <div class="flex justify-between items-center mb-0.5">
+                            <label class="text-[11px] font-semibold text-yellow-400"><i class="fa-solid fa-star"></i> Secret Ingredient</label>
+                            <button id="quickPresetBtn" class="text-[10px] text-purple-400 hover:text-yellow-400"><i class="fa-solid fa-dice"></i> Randomize</button>
+                        </div>
+                        <input type="text" id="inputSecret" placeholder="e.g. 3 AM Ideas, Espresso, Ambition..." 
+                            class="w-full bg-slate-900/90 border border-purple-500/40 rounded-xl px-3 py-1.5 text-xs text-purple-100 placeholder-purple-400/50 focus:outline-none focus:border-pink-500">
+                    </div>
+
+                    <!-- Action Button -->
+                    <button id="cookBtn" class="w-full py-2.5 rounded-xl title-font text-base text-white bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 shadow-lg hover:brightness-110 active:scale-95 transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-fire text-yellow-300 animate-pulse"></i>
+                        <span>COOK POTION & REVEAL PERSONALITY</span>
+                    </button>
+
+                </div>
+
+            </section>
+
+            <!-- TAB 2: QR CODE SHARE & GAME ACCESS -->
+            <section id="tabQR" class="flex-1 flex flex-col justify-between hidden transition-all duration-300">
+                <div class="glass-panel rounded-2xl p-4 flex-1 flex flex-col justify-between space-y-3">
+                    
+                    <div class="text-center">
+                        <h2 class="title-font text-base text-yellow-400">Share App / Join Session</h2>
+                        <p class="text-[11px] text-purple-300">Scan this QR code with any phone camera to open the live game directly.</p>
+                    </div>
+
+                    <!-- QR Target Container -->
+                    <div class="p-3 bg-white rounded-2xl shadow-2xl border-4 border-purple-500/40 flex items-center justify-center mx-auto">
+                        <div id="qrcode" class="w-36 h-36"></div>
+                    </div>
+
+                    <div class="text-center bg-purple-950/60 p-2 rounded-xl border border-purple-800/40">
+                        <p class="text-[11px] text-purple-300 font-bold">App Access Link:</p>
+                        <p id="qrAppUrl" class="text-[10px] text-amber-300 truncate font-mono mt-0.5">https://personality-brew.app/?room=BREW-8842</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="copyQrDataBtn" class="py-2 bg-purple-900/80 hover:bg-purple-800 border border-purple-500/40 rounded-xl text-xs font-bold text-purple-200 flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Copy App Link</span>
+                        </button>
+                        <button id="openScannerFromQrTab" class="py-2 bg-pink-600 hover:bg-pink-500 rounded-xl text-xs font-bold text-white flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Scan Camera</span>
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 3: AI & SETTINGS -->
+            <section id="tabSettings" class="flex-1 flex flex-col justify-between hidden transition-all duration-300">
+                <div class="glass-panel rounded-2xl p-4 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                        <h2 class="title-font text-lg text-yellow-400 mb-1">AI Engine Configuration</h2>
+                        <p class="text-xs text-purple-300 mb-4">Uses Google Gemini AI (`gemini-3-flash-preview`) for dynamic personality analysis. Falls back automatically to the built-in offline engine if offline.</p>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-purple-200 mb-1">Gemini API Key (Optional)</label>
+                                <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." 
+                                    class="w-full bg-slate-900 border border-purple-500/40 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400">
+                                <p class="text-[10px] text-purple-400 mt-1">Leave empty to use built-in Mystical AI rules.</p>
+                            </div>
+
+                            <div class="p-3 bg-purple-950/60 rounded-xl border border-purple-800/40 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fa-solid fa-microchip text-pink-400 text-lg"></i>
+                                    <div>
+                                        <p class="text-xs font-bold text-white">Analysis Status</p>
+                                        <p id="engineStatusText" class="text-[10px] text-green-400">Offline Rule Engine (Active)</p>
+                                    </div>
+                                </div>
+                                <span class="w-3 h-3 rounded-full bg-green-500 animate-ping"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center border-t border-purple-800/40 pt-3">
+                        <p class="text-[11px] text-purple-300 font-bold">Personality Brew Master</p>
+                        <p class="text-[10px] text-yellow-400 mt-0.5">By Younis Mohamed, Selim Mohamed, Yehia Ahmed, Yassin Emad, Ali Mekky, & Hamza Amr</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: HOW TO PLAY INSTRUCTIONS -->
+            <section id="tabHowToPlay" class="flex-1 flex flex-col justify-between hidden transition-all duration-300">
+                <div class="glass-panel rounded-2xl p-4 flex-1 flex flex-col justify-between space-y-3 overflow-y-auto">
+                    <div>
+                        <h2 class="title-font text-lg text-yellow-400 mb-2 flex items-center space-x-2">
+                            <i class="fa-solid fa-book-open text-pink-400"></i>
+                            <span>How to Play</span>
+                        </h2>
+                        
+                        <div class="space-y-3 text-xs text-purple-100">
+                            <div class="p-2.5 bg-purple-950/60 rounded-xl border border-purple-800/40">
+                                <span class="font-bold text-yellow-300 block mb-0.5">1. Mix Your Personality Attributes</span>
+                                <p class="text-purple-300">Adjust the 6 sliders (Heat, Sweetness, Chaos, Sparkle, Mystery, Harmony) to match your vibe.</p>
+                            </div>
+
+                            <div class="p-2.5 bg-purple-950/60 rounded-xl border border-purple-800/40">
+                                <span class="font-bold text-yellow-300 block mb-0.5">2. Add a Secret Ingredient</span>
+                                <p class="text-purple-300">Type any ingredient (e.g. "3 AM Ideas", "Espresso", "Ambition") or tap Randomize.</p>
+                            </div>
+
+                            <div class="p-2.5 bg-purple-950/60 rounded-xl border border-purple-800/40">
+                                <span class="font-bold text-yellow-300 block mb-0.5">3. Cook & Reveal</span>
+                                <p class="text-purple-300">Stir the pot, toggle heat, and tap "Cook Potion". The AI will generate your unique personality dish card!</p>
+                            </div>
+
+                            <div class="p-2.5 bg-purple-950/60 rounded-xl border border-purple-800/40">
+                                <span class="font-bold text-yellow-300 block mb-0.5">4. Share with Committee</span>
+                                <p class="text-purple-300">Open the Share tab to show the scannable QR code so anyone can open and play on their phone.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btnBackToMenuFromHelp" class="w-full py-2.5 bg-purple-700 hover:bg-purple-600 rounded-xl font-bold text-xs text-white">
+                        Back to Main Menu
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="h-14 bg-witcher border-t border-purple-900/60 flex items-center justify-around px-2 z-20">
+            <button id="navMenu" class="flex flex-col items-center text-pink-400 font-bold transition">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px]">Menu</span>
+            </button>
+            <button id="navBrew" class="flex flex-col items-center text-purple-400 hover:text-pink-300 font-bold transition">
+                <i class="fa-solid fa-cauldron text-lg"></i>
+                <span class="text-[10px]">Brew Pot</span>
+            </button>
+            <button id="navQR" class="flex flex-col items-center text-purple-400 hover:text-pink-300 font-bold transition">
+                <i class="fa-solid fa-qrcode text-lg"></i>
+                <span class="text-[10px]">Share App</span>
+            </button>
+            <button id="navSettings" class="flex flex-col items-center text-purple-400 hover:text-pink-300 font-bold transition">
+                <i class="fa-solid fa-gear text-lg"></i>
+                <span class="text-[10px]">AI Config</span>
+            </button>
+        </nav>
+
+        <!-- MODAL: CAMERA SCANNER & ENTRY CODE MODAL -->
+        <div id="joinModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4 hidden">
+            <div class="w-full max-w-sm glass-card rounded-3xl p-5 flex flex-col items-center text-center space-y-4 border border-purple-500/50 relative shadow-2xl">
+                
+                <button id="closeJoinModalBtn" class="absolute top-3 right-4 text-purple-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <div class="text-center">
+                    <h2 class="title-font text-xl text-yellow-400">Scan QR Code to Join</h2>
+                    <p class="text-xs text-purple-300 mt-0.5">Point phone camera or enter committee room code</p>
+                </div>
+
+                <!-- Live Camera Viewport Container -->
+                <div class="w-full bg-slate-950 rounded-2xl border-2 border-dashed border-pink-500 overflow-hidden relative min-h-[180px] flex items-center justify-center">
+                    <div id="qrScannerReader" class="w-full"></div>
+                    <div id="cameraStatusPlaceholder" class="text-center p-4 space-y-2">
+                        <i class="fa-solid fa-camera text-3xl text-purple-500/60 animate-pulse"></i>
+                        <p class="text-xs text-purple-300">Tap below to activate live camera scanner</p>
+                        <button id="startCameraBtn" class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl shadow">
+                            Start Camera
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Manual Room Code Fallback -->
+                <div class="w-full space-y-2 pt-1 border-t border-purple-800/40">
+                    <label class="block text-xs font-bold text-purple-200 text-left">Or Enter Room Code / Recipe Hash:</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="manualCodeInput" placeholder="BREW-8842 or JSON code..." 
+                            class="flex-1 bg-slate-900 border border-purple-500/40 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                        <button id="applyCodeBtn" class="px-4 py-2 bg-purple-700 hover:bg-purple-600 font-bold rounded-xl text-xs text-white">Join</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MODAL: COOKING & REVEAL ANIMATION OVERLAY -->
+        <div id="cookingModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 hidden">
+            
+            <!-- Cooking Animation State -->
+            <div id="modalCookingState" class="flex flex-col items-center space-y-6">
+                <div class="relative w-32 h-32 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border-4 border-t-pink-500 border-r-purple-500 border-b-yellow-400 border-l-indigo-500 animate-spin"></div>
+                    <i class="fa-solid fa-wand-magic-sparkles text-4xl text-yellow-300 animate-bounce"></i>
+                </div>
+                <div class="text-center space-y-2">
+                    <h3 class="title-font text-2xl text-yellow-400 tracking-wider">BREWING YOUR SOUL...</h3>
+                    <p id="cookingStatusText" class="text-xs text-purple-300 animate-pulse">Consulting the AI Mystical Oracle...</p>
+                </div>
+            </div>
+
+            <!-- Personality Profile Card Reveal State -->
+            <div id="modalRevealState" class="w-full max-w-sm glass-card rounded-3xl p-6 flex flex-col items-center text-center space-y-3 shadow-2xl relative border-2 border-yellow-400/60 hidden">
+                
+                <div class="px-3 py-1 bg-yellow-400 text-slate-950 rounded-full font-black text-[10px] tracking-widest uppercase shadow-md">
+                    OFFICIAL PERSONALITY DISH
+                </div>
+
+                <div id="resultAvatar" class="w-16 h-16 rounded-full bg-gradient-to-tr from-pink-500 to-yellow-400 flex items-center justify-center text-white text-2xl shadow-lg border-2 border-white">
+                    <i class="fa-solid fa-dragon"></i>
+                </div>
+
+                <div>
+                    <h2 id="resultTitle" class="title-font text-lg text-yellow-300 leading-tight">The Fiery Chaos Alchemist</h2>
+                    <p id="resultDishName" class="text-xs font-bold text-pink-400 mt-0.5">"Infernal Dragon Pepper Soup"</p>
+                </div>
+
+                <p id="resultDesc" class="text-xs text-purple-100 leading-relaxed max-h-24 overflow-y-auto px-1">
+                    You thrive in unscripted moments! Bold, passionate, and prone to starting 5 projects at once.
+                </p>
+
+                <div id="resultTags" class="flex flex-wrap justify-center gap-1.5 pt-1">
+                    <span class="px-2 py-0.5 bg-purple-900/80 border border-purple-500/40 rounded-lg text-[10px] text-purple-200">🔥 High Energy</span>
+                    <span class="px-2 py-0.5 bg-pink-900/80 border border-pink-500/40 rounded-lg text-[10px] text-pink-200">✨ Creative Chaos</span>
+                </div>
+
+                <div class="flex space-x-2 w-full pt-2">
+                    <button id="shareResultBtn" class="flex-1 py-2.5 bg-purple-700 hover:bg-purple-600 rounded-xl text-xs font-bold text-white flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-qrcode"></i>
+                        <span>Show App QR</span>
+                    </button>
+                    <button id="closeModalBtn" class="flex-1 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 title-font text-sm rounded-xl transition">
+                        BREW AGAIN
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        const state = {
+            spice: 50,
+            sweet: 50,
+            chaos: 50,
+            sparkle: 50,
+            mystery: 30,
+            harmony: 60,
+            secret: "Starlight Shards",
+            flameHigh: true,
+            soundEnabled: true,
+            activeTab: "brew",
+            geminiApiKey: ""
+        };
+
+        const PRESET_SECRETS = [
+            "3 AM Ideas", "Starlight Shards", "Espresso Shot", 
+            "Dragon Tears", "Pixel Dust", "Witty Comments", 
+            "Lofi Beats", "Pure Ambition", "Gummy Bears"
+        ];
+
+        let html5QrScanner = null;
+
+        // Audio Engine
+        const AudioEngine = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playBubble() {
+                if (!state.soundEnabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300 + Math.random() * 400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800 + Math.random() * 200, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.15);
+            },
+            playFanfare() {
+                if (!state.soundEnabled) return;
+                this.init();
+                const notes = [261.63, 329.63, 392.00, 523.25];
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.1);
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.1 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + idx * 0.1);
+                    osc.stop(this.ctx.currentTime + idx * 0.1 + 0.4);
+                });
+            }
+        };
+
+        const elements = {
+            inputSpice: document.getElementById('inputSpice'),
+            inputSweet: document.getElementById('inputSweet'),
+            inputChaos: document.getElementById('inputChaos'),
+            inputSparkle: document.getElementById('inputSparkle'),
+            inputMystery: document.getElementById('inputMystery'),
+            inputHarmony: document.getElementById('inputHarmony'),
+            inputSecret: document.getElementById('inputSecret'),
+            valSpice: document.getElementById('valSpice'),
+            valSweet: document.getElementById('valSweet'),
+            valChaos: document.getElementById('valChaos'),
+            valSparkle: document.getElementById('valSparkle'),
+            valMystery: document.getElementById('valMystery'),
+            valHarmony: document.getElementById('valHarmony'),
+            potionLiquid: document.getElementById('potionLiquid'),
+            stirSpoon: document.getElementById('stirSpoon'),
+            cookBtn: document.getElementById('cookBtn'),
+            quickPresetBtn: document.getElementById('quickPresetBtn'),
+            resetIngredientsBtn: document.getElementById('resetIngredientsBtn'),
+            flameToggleBtn: document.getElementById('flameToggleBtn'),
+            stirBtn: document.getElementById('stirBtn'),
+            flamesContainer: document.getElementById('flamesContainer'),
+            
+            navMenu: document.getElementById('navMenu'),
+            navBrew: document.getElementById('navBrew'),
+            navQR: document.getElementById('navQR'),
+            navSettings: document.getElementById('navSettings'),
+            
+            tabMenu: document.getElementById('tabMenu'),
+            tabBrew: document.getElementById('tabBrew'),
+            tabQR: document.getElementById('tabQR'),
+            tabSettings: document.getElementById('tabSettings'),
+            tabHowToPlay: document.getElementById('tabHowToPlay'),
+            
+            btnPlayGame: document.getElementById('btnPlayGame'),
+            btnShowQr: document.getElementById('btnShowQr'),
+            btnHowToPlay: document.getElementById('btnHowToPlay'),
+            btnDemoPreset: document.getElementById('btnDemoPreset'),
+            btnBackToMenuFromHelp: document.getElementById('btnBackToMenuFromHelp'),
+            headerHomeBtn: document.getElementById('headerHomeBtn'),
+
+            qrcodeContainer: document.getElementById('qrcode'),
+            qrAppUrl: document.getElementById('qrAppUrl'),
+            copyQrDataBtn: document.getElementById('copyQrDataBtn'),
+            openScannerFromQrTab: document.getElementById('openScannerFromQrTab'),
+            
+            joinModal: document.getElementById('joinModal'),
+            showJoinModalBtn: document.getElementById('showJoinModalBtn'),
+            closeJoinModalBtn: document.getElementById('closeJoinModalBtn'),
+            startCameraBtn: document.getElementById('startCameraBtn'),
+            cameraStatusPlaceholder: document.getElementById('cameraStatusPlaceholder'),
+            manualCodeInput: document.getElementById('manualCodeInput'),
+            applyCodeBtn: document.getElementById('applyCodeBtn'),
+
+            presetLeader: document.getElementById('presetLeader'),
+            presetChaos: document.getElementById('presetChaos'),
+            presetMystic: document.getElementById('presetMystic'),
+
+            cookingModal: document.getElementById('cookingModal'),
+            modalCookingState: document.getElementById('modalCookingState'),
+            modalRevealState: document.getElementById('modalRevealState'),
+            cookingStatusText: document.getElementById('cookingStatusText'),
+            resultTitle: document.getElementById('resultTitle'),
+            resultDishName: document.getElementById('resultDishName'),
+            resultDesc: document.getElementById('resultDesc'),
+            resultAvatar: document.getElementById('resultAvatar'),
+            resultTags: document.getElementById('resultTags'),
+            closeModalBtn: document.getElementById('closeModalBtn'),
+            shareResultBtn: document.getElementById('shareResultBtn'),
+
+            soundToggle: document.getElementById('soundToggle'),
+            soundIcon: document.getElementById('soundIcon'),
+            geminiApiKeyInput: document.getElementById('geminiApiKeyInput'),
+            engineStatusText: document.getElementById('engineStatusText'),
+        };
+
+        window.onload = () => {
+            setupEventListeners();
+            updateLiquidColor();
+            generateQRCode();
+        };
+
+        function setupEventListeners() {
+            // Slider listeners
+            const sliders = [
+                { input: elements.inputSpice, target: 'spice', val: elements.valSpice },
+                { input: elements.inputSweet, target: 'sweet', val: elements.valSweet },
+                { input: elements.inputChaos, target: 'chaos', val: elements.valChaos },
+                { input: elements.inputSparkle, target: 'sparkle', val: elements.valSparkle },
+                { input: elements.inputMystery, target: 'mystery', val: elements.valMystery },
+                { input: elements.inputHarmony, target: 'harmony', val: elements.valHarmony }
+            ];
+
+            sliders.forEach(s => {
+                s.input.addEventListener('input', (e) => {
+                    state[s.target] = parseInt(e.target.value);
+                    s.val.innerText = `${state[s.target]}%`;
+                    updateLiquidColor();
+                    AudioEngine.playBubble();
+                });
+            });
+
+            elements.inputSecret.addEventListener('change', (e) => {
+                state.secret = e.target.value || "Mystery Spark";
+            });
+
+            elements.quickPresetBtn.addEventListener('click', () => {
+                const randomSecret = PRESET_SECRETS[Math.floor(Math.random() * PRESET_SECRETS.length)];
+                elements.inputSecret.value = randomSecret;
+                state.secret = randomSecret;
+                AudioEngine.playBubble();
+            });
+
+            // Demo Presets
+            elements.presetLeader.addEventListener('click', () => applyRecipe(90, 40, 30, 70, 20, 80, "Executive Espresso"));
+            elements.presetChaos.addEventListener('click', () => applyRecipe(85, 20, 95, 90, 40, 10, "Pop Rocks & Lightning"));
+            elements.presetMystic.addEventListener('click', () => applyRecipe(20, 80, 40, 80, 90, 75, "Moonlight Dew"));
+
+            // Menu Buttons
+            elements.btnPlayGame.addEventListener('click', () => switchTab('brew'));
+            elements.btnShowQr.addEventListener('click', () => {
+                switchTab('qr');
+                generateQRCode();
+            });
+            elements.btnHowToPlay.addEventListener('click', () => switchTab('howtoplay'));
+            elements.btnDemoPreset.addEventListener('click', () => {
+                applyRecipe(90, 40, 30, 70, 20, 80, "Executive Espresso");
+                switchTab('brew');
+                startBrewingProcess();
+            });
+            elements.btnBackToMenuFromHelp.addEventListener('click', () => switchTab('menu'));
+            elements.headerHomeBtn.addEventListener('click', () => switchTab('menu'));
+
+            elements.resetIngredientsBtn.addEventListener('click', () => {
+                applyRecipe(50, 50, 50, 50, 30, 60, "Starlight Shards");
+            });
+
+            elements.flameToggleBtn.addEventListener('click', () => {
+                state.flameHigh = !state.flameHigh;
+                elements.flameToggleBtn.innerHTML = state.flameHigh ? 
+                    '<i class="fa-solid fa-fire text-orange-400"></i> Heat: High' : 
+                    '<i class="fa-solid fa-fire text-blue-400"></i> Heat: Low';
+                elements.flamesContainer.style.opacity = state.flameHigh ? "1" : "0.3";
+            });
+
+            elements.stirBtn.addEventListener('click', () => {
+                elements.stirSpoon.classList.add('stirring-active');
+                AudioEngine.playBubble();
+                setTimeout(() => elements.stirSpoon.classList.remove('stirring-active'), 1200);
+            });
+
+            // Tabs
+            elements.navMenu.addEventListener('click', () => switchTab('menu'));
+            elements.navBrew.addEventListener('click', () => switchTab('brew'));
+            elements.navQR.addEventListener('click', () => {
+                switchTab('qr');
+                generateQRCode();
+            });
+            elements.navSettings.addEventListener('click', () => switchTab('settings'));
+
+            // Camera Modal
+            elements.showJoinModalBtn.addEventListener('click', openJoinModal);
+            elements.openScannerFromQrTab.addEventListener('click', openJoinModal);
+            elements.closeJoinModalBtn.addEventListener('click', closeJoinModal);
+
+            elements.startCameraBtn.addEventListener('click', startCameraScanner);
+            elements.applyCodeBtn.addEventListener('click', handleManualCode);
+
+            // Cooking action
+            elements.cookBtn.addEventListener('click', startBrewingProcess);
+
+            elements.closeModalBtn.addEventListener('click', () => {
+                elements.cookingModal.classList.add('hidden');
+            });
+
+            elements.shareResultBtn.addEventListener('click', () => {
+                elements.cookingModal.classList.add('hidden');
+                switchTab('qr');
+                generateQRCode();
+            });
+
+            // Audio Toggle
+            elements.soundToggle.addEventListener('click', () => {
+                state.soundEnabled = !state.soundEnabled;
+                elements.soundIcon.className = state.soundEnabled ? "fa-solid fa-volume-high text-xs" : "fa-solid fa-volume-xmark text-xs text-red-400";
+            });
+
+            elements.geminiApiKeyInput.addEventListener('input', (e) => {
+                state.geminiApiKey = e.target.value.trim();
+                elements.engineStatusText.innerText = state.geminiApiKey ? "Gemini Cloud AI Connected" : "Offline Rule Engine (Active)";
+                elements.engineStatusText.className = state.geminiApiKey ? "text-[10px] text-yellow-400 font-bold" : "text-[10px] text-green-400";
+            });
+
+            elements.copyQrDataBtn.addEventListener('click', () => {
+                const url = window.location.href;
+                navigator.clipboard?.writeText ? navigator.clipboard.writeText(url) : document.execCommand('copy');
+                alert("App URL copied to clipboard for committee members!");
+            });
+        }
+
+        function applyRecipe(spice, sweet, chaos, sparkle, mystery, harmony, secret) {
+            state.spice = spice;
+            state.sweet = sweet;
+            state.chaos = chaos;
+            state.sparkle = sparkle;
+            state.mystery = mystery;
+            state.harmony = harmony;
+            state.secret = secret;
+
+            elements.inputSpice.value = spice;
+            elements.inputSweet.value = sweet;
+            elements.inputChaos.value = chaos;
+            elements.inputSparkle.value = sparkle;
+            elements.inputMystery.value = mystery;
+            elements.inputHarmony.value = harmony;
+            elements.inputSecret.value = secret;
+
+            elements.valSpice.innerText = `${spice}%`;
+            elements.valSweet.innerText = `${sweet}%`;
+            elements.valChaos.innerText = `${chaos}%`;
+            elements.valSparkle.innerText = `${sparkle}%`;
+            elements.valMystery.innerText = `${mystery}%`;
+            elements.valHarmony.innerText = `${harmony}%`;
+
+            updateLiquidColor();
+        }
+
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            elements.tabMenu.classList.add('hidden');
+            elements.tabBrew.classList.add('hidden');
+            elements.tabQR.classList.add('hidden');
+            elements.tabSettings.classList.add('hidden');
+            elements.tabHowToPlay.classList.add('hidden');
+
+            elements.navMenu.className = "flex flex-col items-center text-purple-400 font-bold transition";
+            elements.navBrew.className = "flex flex-col items-center text-purple-400 font-bold transition";
+            elements.navQR.className = "flex flex-col items-center text-purple-400 font-bold transition";
+            elements.navSettings.className = "flex flex-col items-center text-purple-400 font-bold transition";
+
+            if (tabName === 'menu') {
+                elements.tabMenu.classList.remove('hidden');
+                elements.navMenu.className = "flex flex-col items-center text-pink-400 font-bold transition";
+            } else if (tabName === 'brew') {
+                elements.tabBrew.classList.remove('hidden');
+                elements.navBrew.className = "flex flex-col items-center text-pink-400 font-bold transition";
+            } else if (tabName === 'qr') {
+                elements.tabQR.classList.remove('hidden');
+                elements.navQR.className = "flex flex-col items-center text-pink-400 font-bold transition";
+            } else if (tabName === 'settings') {
+                elements.tabSettings.classList.remove('hidden');
+                elements.navSettings.className = "flex flex-col items-center text-pink-400 font-bold transition";
+            } else if (tabName === 'howtoplay') {
+                elements.tabHowToPlay.classList.remove('hidden');
+            }
+        }
+
+        function updateLiquidColor() {
+            const r = Math.min(255, Math.floor((state.spice / 100) * 255));
+            const g = Math.min(255, Math.floor((state.sweet / 100) * 180 + (state.harmony / 100) * 75));
+            const b = Math.min(255, Math.floor((state.chaos / 100) * 200 + (state.mystery / 100) * 150));
+            elements.potionLiquid.style.background = `linear-gradient(90deg, rgb(${r}, ${g}, ${b}), rgb(236, 72, 153), rgb(99, 102, 241))`;
+        }
+
+        function generateQRCode() {
+            const appUrl = window.location.href;
+            elements.qrAppUrl.innerText = appUrl;
+
+            elements.qrcodeContainer.innerHTML = "";
+            new QRCode(elements.qrcodeContainer, {
+                text: appUrl,
+                width: 144,
+                height: 144,
+                colorDark : "#2d1b4e",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        function openJoinModal() {
+            elements.joinModal.classList.remove('hidden');
+        }
+
+        function closeJoinModal() {
+            if (html5QrScanner) {
+                html5QrScanner.stop().catch(() => {});
+            }
+            elements.cameraStatusPlaceholder.classList.remove('hidden');
+            elements.joinModal.classList.add('hidden');
+        }
+
+        function startCameraScanner() {
+            elements.cameraStatusPlaceholder.classList.add('hidden');
+            html5QrScanner = new Html5Qrcode("qrScannerReader");
+            html5QrScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 150, height: 150 } },
+                (decodedText) => {
+                    closeJoinModal();
+                    alert(`Scanned QR Code successfully!\nData: ${decodedText}`);
+                    switchTab('brew');
+                },
+                (errorMessage) => {
+                    // scanning...
+                }
+            ).catch(err => {
+                alert("Camera access denied or unreadable. Use manual code entry.");
+                elements.cameraStatusPlaceholder.classList.remove('hidden');
+            });
+        }
+
+        function handleManualCode() {
+            const val = elements.manualCodeInput.value.trim();
+            if (val) {
+                closeJoinModal();
+                alert(`Joined Session / Code Applied: ${val}`);
+                switchTab('brew');
+            }
+        }
+
+        async function startBrewingProcess() {
+            elements.stirSpoon.classList.add('stirring-active');
+            elements.cookingModal.classList.remove('hidden');
+            elements.modalCookingState.classList.remove('hidden');
+            elements.modalRevealState.classList.add('hidden');
+            
+            let soundInterval = setInterval(() => AudioEngine.playBubble(), 200);
+
+            elements.cookingStatusText.innerText = "Infusing secret ingredients...";
+            await new Promise(r => setTimeout(r, 700));
+            
+            elements.cookingStatusText.innerText = "Stirring 6 personality dimensions...";
+            await new Promise(r => setTimeout(r, 800));
+
+            let result;
+            if (state.geminiApiKey) {
+                elements.cookingStatusText.innerText = "Consulting Gemini AI Cloud Oracle...";
+                result = await fetchGeminiPersonality();
+            } else {
+                elements.cookingStatusText.innerText = "Synthesizing Mystical Personality Reading...";
+                result = generateOfflinePersonality();
+            }
+
+            clearInterval(soundInterval);
+            elements.stirSpoon.classList.remove('stirring-active');
+
+            AudioEngine.playFanfare();
+            displayPersonalityCard(result);
+        }
+
+        async function fetchGeminiPersonality() {
+            const apiKey = state.geminiApiKey;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a witty, charismatic potion master. Analyze recipe attributes and respond ONLY in valid JSON matching schema: { title: string, dishName: string, desc: string, iconClass: string, tags: array of strings }.";
+            const userQuery = `Analyze potion: Heat=${state.spice}%, Sweetness=${state.sweet}%, Chaos=${state.chaos}%, Sparkle=${state.sparkle}%, Mystery=${state.mystery}%, Harmony=${state.harmony}%, Secret="${state.secret}".`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            title: { type: "STRING" },
+                            dishName: { type: "STRING" },
+                            desc: { type: "STRING" },
+                            iconClass: { type: "STRING" },
+                            tags: { type: "ARRAY", items: { type: "STRING" } }
+                        },
+                        required: ["title", "dishName", "desc", "iconClass", "tags"]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (jsonText) {
+                    return JSON.parse(jsonText);
+                }
+            } catch (err) {
+                console.warn("Gemini API call error, defaulting to offline engine:", err);
+            }
+
+            return generateOfflinePersonality();
+        }
+
+        function generateOfflinePersonality() {
+            const { spice, sweet, chaos, sparkle, mystery, harmony, secret } = state;
+
+            let title = "The Balanced Strategist";
+            let dishName = `"Harmonious ${secret} Brew"`;
+            let desc = `You maintain equilibrium under pressure while keeping an imaginative sparkle.`;
+            let iconClass = "fa-solid fa-scale-balanced";
+            let tags = ["⚖️ Balanced", "💡 Strategic", "🍵 Calm Leader"];
+
+            if (spice > 70 && chaos > 70) {
+                title = "The High-Octane Visionary";
+                dishName = `"Volcanic ${secret} Fuel"`;
+                desc = `Unstoppable energy! You thrive in high-stakes environments and inspire teams with spontaneous brilliance.`;
+                iconClass = "fa-solid fa-fire";
+                tags = ["🔥 High Energy", "🚀 Visionary", "⚡ Unstoppable"];
+            } else if (sweet > 70 && harmony > 65) {
+                title = "The Empathetic Anchor";
+                dishName = `"Velvet ${secret} Tonic"`;
+                desc = `The heart of any team. Your high emotional intelligence creates trust, cohesion, and smooth collaboration.`;
+                iconClass = "fa-solid fa-heart";
+                tags = ["🤝 Empathy", "💖 Team Anchor", "🌱 Nurturing"];
+            } else if (sparkle > 75 && mystery > 60) {
+                title = "The Cosmic Innovator";
+                dishName = `"Starlight ${secret} Elixir"`;
+                desc = `You think outside the box... and outside the galaxy! Deep analytical mystery meets sparkling creativity.`;
+                iconClass = "fa-solid fa-wand-magic-sparkles";
+                tags = ["✨ Innovative", "🌌 Deep Thinker", "🔮 Creative"];
+            }
+
+            return { title, dishName, desc, iconClass, tags };
+        }
+
+        function displayPersonalityCard(data) {
+            elements.resultTitle.innerText = data.title || "The Mystical Mastermind";
+            elements.resultDishName.innerText = data.dishName || `"Custom ${state.secret} Pot"`;
+            elements.resultDesc.innerText = data.desc || "A distinct fusion of personality traits!";
+            
+            elements.resultAvatar.innerHTML = `<i class="${data.iconClass || 'fa-solid fa-flask'}"></i>`;
+            
+            elements.resultTags.innerHTML = "";
+            if (data.tags && Array.isArray(data.tags)) {
+                data.tags.forEach(tag => {
+                    const span = document.createElement('span');
+                    span.className = "px-2 py-0.5 bg-purple-900/80 border border-purple-500/40 rounded-lg text-[10px] text-purple-200";
+                    span.innerText = tag;
+                    elements.resultTags.appendChild(span);
+                });
+            }
+
+            elements.modalCookingState.classList.add('hidden');
+            elements.modalRevealState.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
